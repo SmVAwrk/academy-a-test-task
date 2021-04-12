@@ -9,6 +9,7 @@ from academy_a_test_task import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
 
+    # Storage app
     path('', include('storage_app.urls')),
 ]
 
