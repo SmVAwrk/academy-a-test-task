@@ -1,4 +1,8 @@
+import logging
+
 from django.db import models
+
+logger = logging.getLogger(__name__)
 
 
 class Resource(models.Model):
@@ -6,9 +10,20 @@ class Resource(models.Model):
     title = models.CharField(verbose_name='Наименование', max_length=256)
     amount = models.FloatField(verbose_name='Количество')
     unit = models.CharField(verbose_name='Единица измерения', max_length=64)
-    price = models.DecimalField(verbose_name='Цена за единицу', max_digits=6, decimal_places=2)
+    price = models.FloatField(verbose_name='Цена за единицу')
     date = models.DateField(verbose_name='Дата последнего поступления')
 
     def __str__(self):
-        """Строковое представление объекта."""
+        """Определение названия, как строковое представление объекта."""
         return self.title
+
+    def get_cost(self):
+        return self.amount * self.price
+
+    def save(self, *args, **kwargs):
+        """Расширение метода save() для добавления логирования."""
+        if not self.pk:
+            logger.info(f'Создание объекта {self.title}')
+        else:
+            logger.info(f'Изменение объекта {self.title}')
+        super().save(*args, **kwargs)
