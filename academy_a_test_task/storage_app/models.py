@@ -18,7 +18,8 @@ class Resource(models.Model):
         return self.title
 
     def get_cost(self):
-        return self.amount * self.price
+        """Дополнительный метод для расчёта общей стоимости."""
+        return round(self.amount * self.price, 2)
 
     def save(self, *args, **kwargs):
         """Расширение метода save() для добавления логирования."""

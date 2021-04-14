@@ -3,7 +3,6 @@ import json
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-from django.test.client import MULTIPART_CONTENT
 
 from storage_app.models import Resource
 from storage_app.serializers import ResourceSerializer
@@ -17,7 +16,32 @@ class GetTotalCoastViewTestCase(APITestCase):
         res_3 = Resource.objects.create(title='res_3', amount=300, unit='m', price=5, date='2021-03-21')
 
         expected_data = {
-            'total_cost': res_1.amount * res_1.price + res_2.amount * res_2.price + res_3.amount * res_3.price
+            'total_cost': round(res_1.amount * res_1.price + res_2.amount * res_2.price + res_3.amount * res_3.price, 3)
+        }
+
+        url = reverse('total_cost')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
+    def test_ok_with_round(self):
+        res_1 = Resource.objects.create(title='res_1', amount=100, unit='kg', price=15.125, date='2020-03-21')
+        res_2 = Resource.objects.create(title='res_2', amount=200, unit='liter', price=10.11, date='2021-03-21')
+
+        expected_data = {
+            'total_cost': round(res_1.amount * res_1.price + res_2.amount * res_2.price, 2)
+        }
+
+        url = reverse('total_cost')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
+    def test_ok_with_no_data(self):
+        expected_data = {
+            'total_cost': 0
         }
 
         url = reverse('total_cost')
@@ -223,10 +247,3 @@ class ResourceAPIViewTestCase(APITestCase):
         response = self.client.delete(url, data=input_data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
-

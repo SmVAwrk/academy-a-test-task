@@ -18,7 +18,7 @@ class ResourceSerializerTestCase(TestCase):
                 "amount": 100,
                 "unit": "kg",
                 "price": 15,
-                "cost": res_1.amount * res_1.price,
+                "cost": round(res_1.amount * res_1.price, 2),
                 "date": "2020-03-21"
             },
             {
@@ -27,7 +27,7 @@ class ResourceSerializerTestCase(TestCase):
                 "amount": 200,
                 "unit": "liter",
                 "price": 10,
-                "cost": res_2.amount * res_2.price,
+                "cost": round(res_2.amount * res_2.price, 2),
                 "date": "2021-03-21"
             }
         ]
@@ -82,4 +82,3 @@ class ResourceSerializerTestCase(TestCase):
         serializer = ResourceSerializer(data=input_data)
         with self.assertRaises(ValidationError):
             serializer.is_valid(raise_exception=True)
-

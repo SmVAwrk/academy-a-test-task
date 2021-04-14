@@ -1,9 +1,9 @@
 import logging
 
 from django.db.models import F, Sum
+from django.shortcuts import redirect
 from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,9 +16,18 @@ logger = logging.getLogger(__name__)
 
 
 @api_view(['GET', ])
+def index(request, *args, **kwargs):
+    return redirect('resources')
+
+
+@api_view(['GET', ])
 def get_total_coast_view(request, *args, **kwargs):
     """Представление функция для получения общей стоимости запасов на складе."""
     total_cost = Resource.objects.all().aggregate(total_cost=Sum(F('amount') * F('price')))
+
+    # Обработка полученного значения
+    total_cost['total_cost'] = round(total_cost['total_cost'], 2) if total_cost['total_cost'] else 0
+
     return Response(total_cost, status=status.HTTP_200_OK)
 
 
@@ -52,7 +61,6 @@ class ResourceAPIView(APIView):
         """
         # Получение данных запроса
         input_data = request.data
-
         # Валидация, сериализация входных данных и создание экземпляра
         serializer = ResourceSerializer(data=input_data)
         serializer.is_valid(raise_exception=True)

@@ -13,7 +13,6 @@ urlpatterns = [
     path('', include('storage_app.urls')),
 ]
 
-
 # Подключение Debug Toolbar
 if settings.DEBUG:
     import debug_toolbar
